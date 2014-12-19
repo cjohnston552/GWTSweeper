@@ -2,6 +2,7 @@ package com.mySampleApplication.client;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.dom.client.Style;
+import com.google.gwt.storage.client.Storage;
 import com.google.gwt.user.client.*;
 import com.google.gwt.user.client.ui.*;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -16,22 +17,33 @@ import java.util.ArrayList;
  */
 public class MySampleApplication implements EntryPoint {
 
-    static Button easyButton = new Button("EASY");
-    static Button intermediateButton = new Button("INTERMEDIATE");
-    static Button hardButton = new Button("HARDest");
+    Button easyButton = new Button("EASY");
+    Button intermediateButton = new Button("INTERMEDIATE");
+    Button hardButton = new Button("HARD");
+    Button customButton = new Button("CUSTOM");
+    String newName;
+    Button nameCollectionButton = new Button("Enter name");
+    TextBox customSize = new TextBox();
+    TextBox customMines = new TextBox();
+    TextBox nameCollector = new TextBox();
+    ArrayList<Integer> diffHighScores;
+    ArrayList<String> diffHighScoreNames;
     boolean firstClick = true;
+    long startTime;
     Tile[][] logicGrid;
     FlexTable gameGrid = new FlexTable();
     VerticalPanel mainPanel;
     Label showMineCount;
-    static Difficulty difficulty;
+    Difficulty difficulty;
     int minesLeft;
     boolean gameover;
+    Storage highScores = Storage.getLocalStorageIfSupported();
 
     /**
      * This is the entry point method.
      */
     public void onModuleLoad() {
+        highScores.clear();
         //Creating my panels;
         easyButton.addClickHandler(new ClickHandler() {
             @Override
@@ -51,11 +63,20 @@ public class MySampleApplication implements EntryPoint {
                 handleDifficultyClick(event);
             }
         });
+        customButton.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                handleDifficultyClick(event);
+            }
+        });
         mainPanel = new VerticalPanel();
         HorizontalPanel difficultyButtonsPanel = new HorizontalPanel();
         difficultyButtonsPanel.add(easyButton);
         difficultyButtonsPanel.add(intermediateButton);
         difficultyButtonsPanel.add(hardButton);
+        difficultyButtonsPanel.add(customButton);
+        difficultyButtonsPanel.add(customSize);
+        difficultyButtonsPanel.add(customMines);
         showMineCount = new Label();
         difficultyButtonsPanel.add(showMineCount);
         mainPanel.add(gameGrid);
@@ -65,6 +86,9 @@ public class MySampleApplication implements EntryPoint {
 
     private void startNewGame(){
         gameover=false;
+        highScores.setItem("En1","ABC");
+        highScores.setItem("Es1","999");
+        //System.out.println(easyHighScore1);
         showMineCount.setText(String.valueOf(difficulty.bombs));
         firstClick = true;
         logicGrid = new Tile[difficulty.size][difficulty.size];
@@ -73,7 +97,6 @@ public class MySampleApplication implements EntryPoint {
         for(int r=0;r<difficulty.size;r++){
             for(int c=0;c<difficulty.size;c++){
                 logicGrid[r][c] = new Tile(r,c);
-                gameGrid.getFlexCellFormatter().setStyleName(r,c,"flexTable");
             }
         }
         ClickHandler cellClickHandler = new ClickHandler() {
@@ -100,14 +123,24 @@ public class MySampleApplication implements EntryPoint {
     private void handleDifficultyClick(ClickEvent e){
         mainPanel.remove(gameGrid);
         Widget sender = (Widget) e.getSource();
-        if (sender == MySampleApplication.easyButton){
-            MySampleApplication.difficulty = new Difficulty(9);
+        if (sender == easyButton){
+            difficulty = new Difficulty(9, 'E');
         }
-        else if(sender == MySampleApplication.intermediateButton){
-            MySampleApplication.difficulty = new Difficulty(13);
+        else if(sender == intermediateButton){
+            difficulty = new Difficulty(13, 'I');
         }
-        else if(sender == MySampleApplication.hardButton){
-            MySampleApplication.difficulty = new Difficulty(18);
+        else if(sender == hardButton){
+            difficulty = new Difficulty(18, 'H');
+        }
+        else if(sender == customButton){
+            int s = Integer.parseInt(customSize.getText());
+            if(customMines.getText().equalsIgnoreCase(""))difficulty = new Difficulty(s, 'c');
+            int b = Integer.parseInt(customMines.getText());
+            if(s<2)s=2;
+            else if (s>40)s=40;
+            if(b<0)b=0;
+            else if(b>s*s)b = s*s - 1;
+            difficulty = new Difficulty(s,b);
         }
         startNewGame();
     }
@@ -128,6 +161,7 @@ public class MySampleApplication implements EntryPoint {
             }
         }else {
             if(firstClick){
+                startTime = System.currentTimeMillis();
                 tile.isUncovered = true;
                 makeSomeMines();
                 firstClick = false;
@@ -195,6 +229,7 @@ public class MySampleApplication implements EntryPoint {
 
     public void loseGame(){
 
+
         for(int r=0;r<difficulty.size;r++){
             for(int c=0;c<difficulty.size;c++){
                 TileButton bt = (TileButton)gameGrid.getWidget(r,c);
@@ -207,12 +242,50 @@ public class MySampleApplication implements EntryPoint {
             }
         }
 
-        Window.alert("You Lose!");
+        Window.alert("You Lose! Time Elapsed: "+(System.currentTimeMillis() - startTime)/1000 + "s");
         gameover = true;
     }
 
     void winGame(){
-        Window.alert("You Win!");
+        long duration = (System.currentTimeMillis() - startTime)/1000;
+        Window.alert("You Win! Time Elapsed: "+duration + "s");
+        //HIGH SCORES DISPLAYING AND SETTING
+        // 'diff', 'Name or Score', 'places
+        System.out.println("length of highScores: "+highScores.getLength());
+        System.out.println(highScores.getItem(highScores.key(0)));
+        for(int k=0;k<highScores.getLength();k++){
+            if(highScores.key(k).charAt(0)==difficulty.d){
+                if(highScores.key(k).charAt(1)=='n'){
+
+                    diffHighScoreNames.set((int)highScores.key(k).charAt(2),highScores.getItem(highScores.key(k)).substring(3));
+                }
+                else if(highScores.key(k).charAt(1)=='s')
+                    diffHighScores.set((int)highScores.key(k).charAt(2), Integer.parseInt(highScores.getItem(highScores.key(k)).substring(3)));
+            }
+        }
+        int n=0;
+        System.out.println(diffHighScoreNames.get(0));
+        System.out.println(diffHighScores.get(0));
+        while(duration>diffHighScores.get(n)){
+            n++;
+        }
+        if(n<6){
+            RootPanel.get().add(nameCollector);
+            nameCollectionButton.addClickHandler(new ClickHandler() {
+                @Override
+                public void onClick(ClickEvent event) {
+                newName = nameCollector.getText();
+                RootPanel.get().remove(nameCollector);
+                RootPanel.get().remove(nameCollectionButton);
+                }
+            });
+
+            RootPanel.get().add(nameCollectionButton);
+
+            diffHighScoreNames.add(n,newName);
+            diffHighScores.add(n,(int)duration);
+        }
+
         gameover = true;
     }
 
@@ -342,9 +415,14 @@ public class MySampleApplication implements EntryPoint {
 
 class Difficulty{
     int size,bombs;
-    Difficulty(int s){
+    char d;
+    Difficulty(int s, char d){
         size = s;
         bombs = (int)((58.4) - (11.9*s) +(.7*s*s));
+    }
+    Difficulty(int s, int b){
+        size = s;
+        bombs = b;
     }
 
 }

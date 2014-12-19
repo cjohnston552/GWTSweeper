@@ -11,22 +11,18 @@ body, td, a, div, .p {
 }
 
 .cellButton {
-    width:50px;
-    height:50px;
+    width:40px;
+    height:40px;
     font-size:18pt;
     background-color: #dcdcdc;
     border: 3px solid #666;
     color:#000;
 }
 .cellButtonUncovered {
-    width:50px;
-    height:50px;
-    font-size:16pt;
+    width:40px;
+    height:40px;
+    font-size:18pt;
     background-color: #bdbdbd;
     border: 3px solid #666;
     color:#000;
-}
-
-.flexTable {
-
 }
