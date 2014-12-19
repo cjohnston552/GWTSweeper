@@ -19,7 +19,7 @@ public class MySampleApplication implements EntryPoint {
     public static Button easyButton = new Button("EASY");
     public static boolean firstClick = true;
     public static Button intermediateButton = new Button("INTERMEDIATE");
-    public static Button hardButton = new Button("HARD");
+    public static Button hardButton = new Button("HARDest");
     public Tile[][] logicGrid;
     FlexTable gameGrid = new FlexTable();
     VerticalPanel mainPanel;
