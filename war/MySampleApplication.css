@@ -1,0 +1,32 @@
+/** Add css rules here for your application. */
+
+h1 {
+    font-size: 2em;
+    font-weight:normal;
+    text-align: left;
+}
+
+body, td, a, div, .p {
+    font-family: arial, sans-serif
+}
+
+.cellButton {
+    width:50px;
+    height:50px;
+    font-size:18pt;
+    background-color: #dcdcdc;
+    border: 3px solid #666;
+    color:#000;
+}
+.cellButtonUncovered {
+    width:50px;
+    height:50px;
+    font-size:16pt;
+    background-color: #bdbdbd;
+    border: 3px solid #666;
+    color:#000;
+}
+
+.flexTable {
+
+}
