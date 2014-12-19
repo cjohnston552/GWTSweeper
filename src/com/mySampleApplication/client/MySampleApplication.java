@@ -101,13 +101,13 @@ public class MySampleApplication implements EntryPoint {
         mainPanel.remove(gameGrid);
         Widget sender = (Widget) e.getSource();
         if (sender == MySampleApplication.easyButton){
-            MySampleApplication.difficulty = new Difficulty(7);
+            MySampleApplication.difficulty = new Difficulty(9);
         }
         else if(sender == MySampleApplication.intermediateButton){
-            MySampleApplication.difficulty = new Difficulty(10);
+            MySampleApplication.difficulty = new Difficulty(13);
         }
         else if(sender == MySampleApplication.hardButton){
-            MySampleApplication.difficulty = new Difficulty(15);
+            MySampleApplication.difficulty = new Difficulty(18);
         }
         startNewGame();
     }
@@ -344,7 +344,7 @@ class Difficulty{
     int size,bombs;
     Difficulty(int s){
         size = s;
-        bombs = (s*s)/6;
+        bombs = (int)((58.4) - (11.9*s) +(.7*s*s));
     }
 
 }
