@@ -16,16 +16,15 @@ import java.util.ArrayList;
  */
 public class MySampleApplication implements EntryPoint {
 
-    public static Button easyButton = new Button("EASY");
-    public static boolean firstClick = true;
-    public static Button intermediateButton = new Button("INTERMEDIATE");
-    public static Button hardButton = new Button("HARDest");
-    public Tile[][] logicGrid;
+    static Button easyButton = new Button("EASY");
+    static Button intermediateButton = new Button("INTERMEDIATE");
+    static Button hardButton = new Button("HARDest");
+    boolean firstClick = true;
+    Tile[][] logicGrid;
     FlexTable gameGrid = new FlexTable();
     VerticalPanel mainPanel;
     Label showMineCount;
-    public static Difficulty difficulty;
-    PopupPanel p;
+    static Difficulty difficulty;
     int minesLeft;
     boolean gameover;
 
@@ -33,8 +32,7 @@ public class MySampleApplication implements EntryPoint {
      * This is the entry point method.
      */
     public void onModuleLoad() {
-
-        //Creating my panels);
+        //Creating my panels;
         easyButton.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
@@ -60,31 +58,9 @@ public class MySampleApplication implements EntryPoint {
         difficultyButtonsPanel.add(hardButton);
         showMineCount = new Label();
         difficultyButtonsPanel.add(showMineCount);
-
-
         mainPanel.add(gameGrid);
         RootPanel.get().add(difficultyButtonsPanel);
         RootPanel.get().add(mainPanel);
-
-
-    }
-
-
-
-    private static class MyAsyncCallback implements AsyncCallback<String> {
-        private Label label;
-
-        public MyAsyncCallback(Label label) {
-            this.label = label;
-        }
-
-        public void onSuccess(String result) {
-            label.getElement().setInnerHTML(result);
-        }
-
-        public void onFailure(Throwable throwable) {
-            label.setText("Failed to receive answer from server!");
-        }
     }
 
     private void startNewGame(){
@@ -118,7 +94,6 @@ public class MySampleApplication implements EntryPoint {
                 gameGrid.setWidget(r, c, btn);
             }
         }
-
         mainPanel.add(gameGrid);
     }
 
@@ -127,15 +102,12 @@ public class MySampleApplication implements EntryPoint {
         Widget sender = (Widget) e.getSource();
         if (sender == MySampleApplication.easyButton){
             MySampleApplication.difficulty = new Difficulty(7);
-            System.out.println(MySampleApplication.difficulty.size);
         }
         else if(sender == MySampleApplication.intermediateButton){
             MySampleApplication.difficulty = new Difficulty(10);
-            System.out.println(MySampleApplication.difficulty.size);
         }
         else if(sender == MySampleApplication.hardButton){
             MySampleApplication.difficulty = new Difficulty(15);
-            System.out.println(MySampleApplication.difficulty.size);
         }
         startNewGame();
     }
@@ -144,13 +116,11 @@ public class MySampleApplication implements EntryPoint {
         if(gameover)return;
         boolean shifted = e.isShiftKeyDown();
         TileButton btn = (TileButton)e.getSource();
-        System.out.println(""+btn.row+" "+btn.column);
         int r = btn.row;
         int c = btn.column;
         Tile tile = logicGrid[r][c];
         if(tile.isUncovered){
             if(isChordable(tile)){
-                System.out.println("chordable");
                 chordTile(tile);
             }
             else{
@@ -217,12 +187,9 @@ public class MySampleApplication implements EntryPoint {
                 bombsLeft = bombsLeft-1;
             }
         }
-
-
     }
 
     public void isGameWon(){
-        System.out.println("won?");
         if(hasNoMoreSquares() && minesLeft == 0)winGame();
     }
 
@@ -250,16 +217,13 @@ public class MySampleApplication implements EntryPoint {
     }
 
     public boolean hasNoMoreSquares(){
-        System.out.println("sq?");
         for(int r=0;r<difficulty.size;r++){
             for(int c=0;c<difficulty.size;c++){
                 if((!logicGrid[r][c].isUncovered && !logicGrid[r][c].isFlagged) || (!logicGrid[r][c].isMine && logicGrid[r][c].isFlagged)){
-                    System.out.println(""+r+" "+c);
                     return false;
                 }
             }
         }
-        System.out.println("nomoresquares");
         return true;
     }
 
@@ -273,7 +237,6 @@ public class MySampleApplication implements EntryPoint {
     }
 
     private boolean isChordable(Tile t){
-        System.out.println("chord?");
         ArrayList<Tile> neighbs = getValidNeighbors(t);
         for(int n=0;n<neighbs.size();n++){
             if((neighbs.get(n).isMine && !neighbs.get(n).isFlagged) || (neighbs.get(n).isFlagged && !neighbs.get(n).isMine)){
@@ -286,7 +249,6 @@ public class MySampleApplication implements EntryPoint {
     private void chordTile(Tile t){
         ArrayList<Tile> neighbs = getValidNeighbors(t);
         for(int n=0;n<neighbs.size();n++){
-            System.out.print(""+neighbs.get(n).row+" "+neighbs.get(n).column+" ");
             if(!neighbs.get(n).isUncovered && !neighbs.get(n).isFlagged && !neighbs.get(n).isMine){
                 if(neighbs.get(n).adjacentCount == 0){
                     clearAdjacentTiles(neighbs.get(n));
