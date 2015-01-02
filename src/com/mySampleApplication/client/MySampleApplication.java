@@ -87,8 +87,7 @@ public class MySampleApplication implements EntryPoint {
     private void startNewGame(){
         gameover=false;
         highScores.setItem("En1","ABC");
-        highScores.setItem("Es1","999");
-        //System.out.println(easyHighScore1);
+        highScores.setItem("Es1","99");
         showMineCount.setText(String.valueOf(difficulty.bombs));
         firstClick = true;
         logicGrid = new Tile[difficulty.size][difficulty.size];
@@ -140,7 +139,7 @@ public class MySampleApplication implements EntryPoint {
             else if (s>40)s=40;
             if(b<0)b=0;
             else if(b>s*s)b = s*s - 1;
-            difficulty = new Difficulty(s,b);
+            difficulty = new Difficulty(s,'C',b);
         }
         startNewGame();
     }
@@ -247,28 +246,32 @@ public class MySampleApplication implements EntryPoint {
     }
 
     void winGame(){
+        //TODO: high scores
         long duration = (System.currentTimeMillis() - startTime)/1000;
         Window.alert("You Win! Time Elapsed: "+duration + "s");
         //HIGH SCORES DISPLAYING AND SETTING
         // 'diff', 'Name or Score', 'places
         System.out.println("length of highScores: "+highScores.getLength());
         System.out.println(highScores.getItem(highScores.key(0)));
+        System.out.println(difficulty.d);
         for(int k=0;k<highScores.getLength();k++){
             if(highScores.key(k).charAt(0)==difficulty.d){
+                System.out.println("isEasy");
                 if(highScores.key(k).charAt(1)=='n'){
-
-                    diffHighScoreNames.set((int)highScores.key(k).charAt(2),highScores.getItem(highScores.key(k)).substring(3));
+                    diffHighScoreNames.set((int)highScores.key(k).charAt(2),highScores.getItem(highScores.key(k)));
                 }
                 else if(highScores.key(k).charAt(1)=='s')
-                    diffHighScores.set((int)highScores.key(k).charAt(2), Integer.parseInt(highScores.getItem(highScores.key(k)).substring(3)));
+                    diffHighScores.set((int)highScores.key(k).charAt(2), Integer.parseInt(highScores.getItem(highScores.key(k))));
             }
         }
         int n=0;
-        System.out.println(diffHighScoreNames.get(0));
-        System.out.println(diffHighScores.get(0));
+        System.out.println(diffHighScoreNames);
+        System.out.println(diffHighScores);
+        /*
         while(duration>diffHighScores.get(n)){
             n++;
         }
+        */
         if(n<6){
             RootPanel.get().add(nameCollector);
             nameCollectionButton.addClickHandler(new ClickHandler() {
@@ -408,21 +411,20 @@ public class MySampleApplication implements EntryPoint {
         //print('$cell n${neighbors.length}');
         return neighbors;
     }
-
-
 }
 
 
 class Difficulty{
     int size,bombs;
     char d;
-    Difficulty(int s, char d){
+    Difficulty(int s, char di){
         size = s;
         bombs = (int)((58.4) - (11.9*s) +(.7*s*s));
+        d = di;
     }
-    Difficulty(int s, int b){
+    Difficulty(int s, char di, int b){
         size = s;
         bombs = b;
+        d=di;
     }
-
 }
